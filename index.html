@@ -68,7 +68,7 @@
     margin-bottom: 3px;
   }
 
-  input[type=number], input[type=date], select {
+  input[type=number], select {
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 13px;
     padding: 7px 10px;
@@ -80,9 +80,7 @@
     outline: none;
     transition: border-color 0.15s;
   }
-  input[type=number]:focus, input[type=date]:focus, select:focus {
-    border-color: var(--border-strong);
-  }
+  input[type=number]:focus, select:focus { border-color: var(--border-strong); }
 
   input[type=range] {
     -webkit-appearance: none;
@@ -113,60 +111,38 @@
   }
   button:hover { background: var(--bg); }
 
-  .btn-add {
-    font-size: 12px;
-    padding: 5px 12px;
-    margin-top: 8px;
-    border-color: var(--border);
-    color: var(--muted);
-  }
-
   .toggle-wrap { display: flex; gap: 6px; margin-bottom: 1rem; }
   .toggle-btn {
-    font-size: 12px; padding: 4px 12px;
+    font-size: 12px; padding: 4px 14px;
     border-radius: 20px;
     border: 1px solid var(--border);
     color: var(--muted);
     background: transparent;
+    cursor: pointer;
   }
-  .toggle-btn.active {
-    background: var(--text);
-    color: #fff;
-    border-color: var(--text);
-  }
+  .toggle-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-  .seasons-header {
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  .days-row {
     display: grid;
-    grid-template-columns: 110px 1fr 1fr 52px 28px;
-    gap: 6px;
-    margin-bottom: 6px;
-  }
-  .seasons-header span {
-    font-family: 'Helvetica Neue', sans-serif;
-    font-size: 11px;
-    color: var(--hint);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .season-row {
-    display: grid;
-    grid-template-columns: 110px 1fr 1fr 52px 28px;
-    gap: 6px;
+    grid-template-columns: 110px 1fr 70px;
+    gap: 8px;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .days-label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
   }
 
-  .slider-row {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
-  }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .slider-label {
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 13px;
     min-width: 90px;
     display: flex; align-items: center; gap: 6px;
-  }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
   }
   .slider-val {
     font-family: 'Helvetica Neue', sans-serif;
@@ -183,7 +159,7 @@
   }
   .occ-table th:first-child { text-align: left; }
   .occ-table td { padding: 4px; border-bottom: 1px solid var(--border); text-align: center; }
-  .occ-table td:first-child { text-align: left; font-size: 13px; color: var(--text); }
+  .occ-table td:first-child { text-align: left; font-size: 13px; }
   .occ-table input[type=number] { width: 52px; text-align: center; padding: 4px 6px; font-size: 12px; }
 
   .price-grid {
@@ -228,14 +204,14 @@
   .res-table tr:last-child td { border-bottom: none; color: #fff; font-weight: 600; }
   .res-table tr.chiuso-row td { color: rgba(255,255,255,0.35); }
 
-  .status-ok { font-family: 'Helvetica Neue', sans-serif; font-size: 12px; color: #4a9e6a; margin-top: 6px; }
-  .status-warn { font-family: 'Helvetica Neue', sans-serif; font-size: 12px; color: #c0622a; margin-top: 6px; }
+  .status-ok { font-family: 'Helvetica Neue', sans-serif; font-size: 12px; color: #4a9e6a; margin-top: 8px; }
+  .status-warn { font-family: 'Helvetica Neue', sans-serif; font-size: 12px; color: #c0622a; margin-top: 8px; }
 
   .sep { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 
   @media (max-width: 600px) {
-    .seasons-header, .season-row { grid-template-columns: 90px 1fr 1fr 42px 24px; }
     .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .days-row { grid-template-columns: 90px 1fr 58px; }
   }
 </style>
 </head>
@@ -244,17 +220,18 @@
 
   <header>
     <h1>Simulatore fatturato &mdash; Leso Valdiporro</h1>
-    <p>Stima il fatturato annuo in base a stagionalità, occupazione e tariffe</p>
+    <p>Stima il fatturato annuo in base a stagionalità, occupazione e tariffe &middot; 2026</p>
   </header>
 
   <div class="card">
-    <h3>1 &middot; Fasce stagionali</h3>
-    <p style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--muted);margin-bottom:14px;">Definisci gli intervalli di date. I periodi "Chiuso" sono esclusi dal calcolo.</p>
-    <div class="seasons-header">
-      <span>Fascia</span><span>Dal</span><span>Al</span><span style="text-align:center;">Giorni</span><span></span>
+    <h3>1 &middot; Giorni per fascia stagionale</h3>
+    <p style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--muted);margin-bottom:16px;">Inserisci quanti giorni all'anno l'hotel opera in ciascuna fascia. I giorni "Chiuso" sono esclusi dal calcolo del fatturato.</p>
+    <div style="display:grid;grid-template-columns:110px 1fr 70px;gap:8px;margin-bottom:8px;">
+      <span style="font-family:'Helvetica Neue',sans-serif;font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:0.05em;">Fascia</span>
+      <span style="font-family:'Helvetica Neue',sans-serif;font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:0.05em;">Giorni</span>
+      <span style="font-family:'Helvetica Neue',sans-serif;font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:0.05em;text-align:center;">N.</span>
     </div>
-    <div id="seasons-container"></div>
-    <button class="btn-add" onclick="addSeason()">+ aggiungi periodo</button>
+    <div id="fascia-days-container"></div>
     <div id="days-status"></div>
   </div>
 
@@ -267,7 +244,7 @@
 
     <div id="mode-fascia">
       <p style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--muted);margin-bottom:14px;">Valore di occupazione uniforme per tutte le tipologie in quella fascia.</p>
-      <div id="fascia-sliders"></div>
+      <div id="fascia-occ-sliders"></div>
       <hr class="sep">
       <div class="slider-row">
         <span class="slider-label" style="min-width:180px;">Moltiplicatore globale</span>
@@ -332,21 +309,9 @@ const TARIFFE = {
 };
 const CAMERE = { 'Singola BB':3, 'DUS':11, 'Doppia':11, 'Tripla':1, 'Family':1 };
 const FASCE_ATTIVE = ['Promo','Bassa','Standard','Media','Alta','TOP'];
-const FASCE_ALL = ['Chiuso','Promo','Bassa','Standard','Media','Alta','TOP'];
 const COLORS = { Chiuso:'#b4b2a9', Promo:'#2563a8', Bassa:'#1d9e75', Standard:'#639922', Media:'#ba7517', Alta:'#d85a30', TOP:'#993556' };
 
-let seasons = [
-  { name:'Chiuso',   from:'2026-01-01', to:'2026-02-28' },
-  { name:'Promo',    from:'2026-03-01', to:'2026-03-31' },
-  { name:'Bassa',    from:'2026-04-01', to:'2026-05-15' },
-  { name:'Standard', from:'2026-05-16', to:'2026-06-14' },
-  { name:'Media',    from:'2026-06-15', to:'2026-07-14' },
-  { name:'Alta',     from:'2026-07-15', to:'2026-08-31' },
-  { name:'TOP',      from:'2026-09-01', to:'2026-09-14' },
-  { name:'Alta',     from:'2026-09-15', to:'2026-10-31' },
-  { name:'Standard', from:'2026-11-01', to:'2026-11-30' },
-  { name:'Chiuso',   from:'2026-12-01', to:'2026-12-31' },
-];
+let giorni = { Chiuso:60, Promo:40, Bassa:60, Standard:60, Media:45, Alta:60, TOP:40 };
 let occ = {
   'Singola BB': { Promo:40, Bassa:50, Standard:60, Media:70, Alta:85, TOP:90 },
   'DUS':        { Promo:35, Bassa:50, Standard:65, Media:75, Alta:85, TOP:90 },
@@ -359,16 +324,12 @@ let priceAdj = { 'Singola BB':0, 'DUS':0, 'Doppia':0, 'Tripla':0, 'Family':0 };
 let occMult = 100;
 let currentMode = 'fascia';
 
-function dateDiff(a, b) {
-  return Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000) + 1);
-}
-
 function setMode(m) {
   currentMode = m;
-  document.getElementById('mode-fascia').style.display = m === 'fascia' ? '' : 'none';
-  document.getElementById('mode-dettaglio').style.display = m === 'dettaglio' ? '' : 'none';
-  document.getElementById('btn-fascia').classList.toggle('active', m === 'fascia');
-  document.getElementById('btn-dettaglio').classList.toggle('active', m === 'dettaglio');
+  document.getElementById('mode-fascia').style.display = m==='fascia' ? '' : 'none';
+  document.getElementById('mode-dettaglio').style.display = m==='dettaglio' ? '' : 'none';
+  document.getElementById('btn-fascia').classList.toggle('active', m==='fascia');
+  document.getElementById('btn-dettaglio').classList.toggle('active', m==='dettaglio');
   calc();
 }
 
@@ -377,53 +338,50 @@ function getOcc(tipo, fascia) {
   return Math.min(100, occ[tipo][fascia] * occMult / 100);
 }
 
-function addSeason() {
-  seasons.push({ name:'Bassa', from:'2026-01-01', to:'2026-01-31' });
-  buildSeasons(); calc();
-}
-
-function buildSeasons() {
-  const c = document.getElementById('seasons-container');
+function buildFasciaDays() {
+  const c = document.getElementById('fascia-days-container');
   c.innerHTML = '';
-  seasons.forEach((s, i) => {
+  ['Chiuso', ...FASCE_ATTIVE].forEach(f => {
+    const v = giorni[f];
+    const isChiuso = f === 'Chiuso';
     const row = document.createElement('div');
-    row.className = 'season-row';
-    const isChiuso = s.name === 'Chiuso';
+    row.className = 'days-row';
     row.innerHTML = `
-      <select onchange="seasons[${i}].name=this.value;buildSeasons();calc();" style="${isChiuso?'color:var(--hint);':''}">
-        ${FASCE_ALL.map(f => `<option value="${f}"${f===s.name?' selected':''}>${f}</option>`).join('')}
-      </select>
-      <input type="date" value="${s.from}" onchange="seasons[${i}].from=this.value;buildSeasons();calc();">
-      <input type="date" value="${s.to}" onchange="seasons[${i}].to=this.value;buildSeasons();calc();">
-      <span style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--hint);text-align:center;${isChiuso?'text-decoration:line-through;':''}">${dateDiff(s.from,s.to)}g</span>
-      <button onclick="seasons.splice(${i},1);buildSeasons();calc();" style="padding:2px 8px;font-size:16px;line-height:1;border-color:var(--border);color:var(--hint);">×</button>`;
+      <span class="days-label">
+        <span class="dot" style="background:${COLORS[f]};"></span>${f}
+      </span>
+      <input type="range" min="0" max="200" step="1" value="${v}" ${isChiuso?'style="opacity:0.5;"':''}
+        oninput="giorni['${f}']=+this.value; document.getElementById('gv-${f}').value=this.value; updateDaysStatus(); calc();">
+      <input type="number" id="gv-${f}" min="0" max="365" value="${v}" ${isChiuso?'style="opacity:0.6;text-align:center;"':'style="text-align:center;"'}
+        onchange="var v=Math.min(365,Math.max(0,+this.value)); giorni['${f}']=v; this.value=v; updateDaysStatus(); calc();">
+    `;
     c.appendChild(row);
   });
   updateDaysStatus();
 }
 
 function updateDaysStatus() {
-  let total = 0, chiusi = 0;
-  seasons.forEach(s => { const g = dateDiff(s.from,s.to); total+=g; if(s.name==='Chiuso') chiusi+=g; });
+  const tot = Object.values(giorni).reduce((a,v)=>a+v,0);
+  const aperti = FASCE_ATTIVE.reduce((a,f)=>a+(giorni[f]||0),0);
   const el = document.getElementById('days-status');
-  if (total > 365) {
+  if (tot > 365) {
     el.className = 'status-warn';
-    el.textContent = `Attenzione: i periodi coprono ${total} giorni (>365). Verifica le sovrapposizioni.`;
+    el.textContent = `Totale: ${tot} giorni — supera 365, riduci qualche fascia.`;
   } else {
     el.className = 'status-ok';
-    el.textContent = `Totale: ${total}/365 giorni coperti · Aperti: ${total-chiusi} · Chiusi: ${chiusi}`;
+    el.textContent = `Totale: ${tot}/365 giorni · Aperti: ${aperti} · Chiusi: ${giorni['Chiuso']||0}`;
   }
 }
 
-function buildFasciaSliders() {
-  const c = document.getElementById('fascia-sliders');
+function buildFasciaOccSliders() {
+  const c = document.getElementById('fascia-occ-sliders');
   c.innerHTML = '';
   FASCE_ATTIVE.forEach(f => {
     const v = occFascia[f];
     c.innerHTML += `<div class="slider-row">
       <span class="slider-label"><span class="dot" style="background:${COLORS[f]};"></span>${f}</span>
       <input type="range" min="0" max="100" step="1" value="${v}"
-        oninput="occFascia['${f}']=+this.value;document.getElementById('fsv-${f}').textContent=this.value+'%';calc();">
+        oninput="occFascia['${f}']=+this.value; document.getElementById('fsv-${f}').textContent=this.value+'%'; calc();">
       <span class="slider-val" id="fsv-${f}">${v}%</span>
     </div>`;
   });
@@ -454,7 +412,7 @@ function buildPriceAdj() {
       <label>${tipo}</label>
       <div style="display:flex;align-items:center;gap:8px;">
         <input type="range" min="-50" max="50" step="1" value="${v}" style="flex:1;"
-          oninput="priceAdj['${tipo}']=+this.value;document.getElementById('${id}').textContent=(+this.value>=0?'+':'')+this.value+'%';calc();">
+          oninput="priceAdj['${tipo}']=+this.value; document.getElementById('${id}').textContent=(+this.value>=0?'+':'')+this.value+'%'; calc();">
         <span style="font-family:'Helvetica Neue',sans-serif;font-size:12px;font-weight:600;min-width:40px;text-align:right;" id="${id}">${v>=0?'+':''}${v}%</span>
       </div>
     </div>`;
@@ -464,62 +422,60 @@ function buildPriceAdj() {
 function calc() {
   let grandTotal = 0, totalOccNotti = 0, totalPossibili = 0;
   let fasceTotali = {};
-  FASCE_ALL.forEach(f => fasceTotali[f] = 0);
-  let giorniAperti = 0, giorniChiusi = 0;
+  FASCE_ATTIVE.forEach(f => fasceTotali[f] = 0);
 
-  seasons.forEach(s => {
-    const giorni = dateDiff(s.from, s.to);
-    if (s.name === 'Chiuso') { giorniChiusi += giorni; return; }
-    giorniAperti += giorni;
+  FASCE_ATTIVE.forEach(f => {
+    const g = giorni[f] || 0;
+    if (g === 0) return;
     Object.keys(TARIFFE).forEach(tipo => {
-      const prezzo = TARIFFE[tipo][s.name] * (1 + priceAdj[tipo] / 100);
-      const percOcc = getOcc(tipo, s.name) / 100;
+      const prezzo = TARIFFE[tipo][f] * (1 + priceAdj[tipo] / 100);
+      const percOcc = getOcc(tipo, f) / 100;
       const camere = CAMERE[tipo];
-      const rev = prezzo * percOcc * camere * giorni;
+      const rev = prezzo * percOcc * camere * g;
       grandTotal += rev;
-      fasceTotali[s.name] = (fasceTotali[s.name] || 0) + rev;
-      totalOccNotti += percOcc * camere * giorni;
-      totalPossibili += camere * giorni;
+      fasceTotali[f] += rev;
+      totalOccNotti += percOcc * camere * g;
+      totalPossibili += camere * g;
     });
   });
 
+  const giorniAperti = FASCE_ATTIVE.reduce((a,f)=>a+(giorni[f]||0),0);
   const occMedia = totalPossibili > 0 ? totalOccNotti / totalPossibili * 100 : 0;
   const adr = totalOccNotti > 0 ? grandTotal / totalOccNotti : 0;
 
-  document.getElementById('res-total').textContent = '€\u00a0' + Math.round(grandTotal).toLocaleString('it-IT');
+  document.getElementById('res-total').textContent = '\u20ac\u00a0' + Math.round(grandTotal).toLocaleString('it-IT');
   document.getElementById('res-days').textContent = giorniAperti;
   document.getElementById('res-occ').textContent = occMedia.toFixed(1) + '%';
-  document.getElementById('res-adr').textContent = '€\u00a0' + Math.round(adr).toLocaleString('it-IT');
+  document.getElementById('res-adr').textContent = '\u20ac\u00a0' + Math.round(adr).toLocaleString('it-IT');
 
   const tbody = document.getElementById('res-body');
   tbody.innerHTML = '';
   FASCE_ATTIVE.filter(f => fasceTotali[f] > 0)
-    .sort((a,b) => fasceTotali[b] - fasceTotali[a])
+    .sort((a,b) => fasceTotali[b]-fasceTotali[a])
     .forEach(f => {
       const pct = grandTotal > 0 ? (fasceTotali[f]/grandTotal*100).toFixed(1) : '0.0';
-      const giorni = seasons.filter(s=>s.name===f).reduce((a,s)=>a+dateDiff(s.from,s.to),0);
       tbody.innerHTML += `<tr>
-        <td><span class="dot" style="background:${COLORS[f]};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>${f}</td>
-        <td>${giorni}</td>
-        <td>€\u00a0${Math.round(fasceTotali[f]).toLocaleString('it-IT')}</td>
+        <td><span class="dot" style="background:${COLORS[f]};display:inline-block;margin-right:7px;vertical-align:middle;"></span>${f}</td>
+        <td>${giorni[f]||0}</td>
+        <td>\u20ac\u00a0${Math.round(fasceTotali[f]).toLocaleString('it-IT')}</td>
         <td>${pct}%</td>
       </tr>`;
     });
-  if (giorniChiusi > 0) {
+  if ((giorni['Chiuso']||0) > 0) {
     tbody.innerHTML += `<tr class="chiuso-row">
-      <td><span class="dot" style="background:#b4b2a9;display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>Chiuso</td>
-      <td>${giorniChiusi}</td><td>—</td><td>—</td>
+      <td><span class="dot" style="background:#b4b2a9;display:inline-block;margin-right:7px;vertical-align:middle;"></span>Chiuso</td>
+      <td>${giorni['Chiuso']}</td><td>—</td><td>—</td>
     </tr>`;
   }
   tbody.innerHTML += `<tr>
     <td>Totale</td><td>${giorniAperti}</td>
-    <td>€\u00a0${Math.round(grandTotal).toLocaleString('it-IT')}</td>
+    <td>\u20ac\u00a0${Math.round(grandTotal).toLocaleString('it-IT')}</td>
     <td>100%</td>
   </tr>`;
 }
 
-buildSeasons();
-buildFasciaSliders();
+buildFasciaDays();
+buildFasciaOccSliders();
 buildOccTable();
 buildPriceAdj();
 calc();
